@@ -22,6 +22,7 @@
         { "slug": "modmenu", "name": "Mod Menu", "ref": "[模组菜单] modmenu-20.0.1.jar" },
         { "slug": "fabric-language-kotlin", "name": "Fabric Language Kotlin", "ref": "fabric-language-kotlin-1.13.13+kotlin.2.4.10.jar" },
         { "slug": "inventory-sorting", "name": "Inventory Sorting", "ref": "inventorysorter-fabric-3.0.0+mc26.2.jar", "note": "Kyrptonaught 的 Inventory Sorting" },
+        { "slug": "continuity", "name": "Continuity", "ref": "continuity-3.0.1+26.2.jar", "note": "Fabric 专属连接纹理（Forge/NeoForge 对应 Fusion）" },
         { "slug": "rei", "name": "Roughly Enough Items (REI)", "ref": "[REI物品管理器] RoughlyEnoughItems-26.2.820.jar", "note": "按约定归 Fabric 专属（Forge/NeoForge 用 JEI）" },
         { "slug": "veinminer", "name": "VeinMiner", "ref": "veinminer-fabric-2.12.1.jar", "note": "按约定归 Fabric 专属（Forge/NeoForge 用 FTB Ultimine）" },
         { "slug": "veinminer-client", "name": "VeinMiner Hotkey", "ref": "veinminer-client-fabric-2.12.1.jar", "note": "VeinMiner 的客户端快捷键组件" },
@@ -46,7 +47,6 @@
         { "slug": "controlling", "name": "Controlling", "ref": "[键位冲突显示] Controlling-fabric-26.2-26.2.2.jar" },
         { "slug": "reeses-sodium-options", "name": "Reese's Sodium Options", "ref": "[Reese的钠视频界面] reeses-sodium-options-fabric-2.2.3+mc26.2.jar" },
         { "slug": "clumps", "name": "Clumps", "ref": "[经验机制改革] Clumps-fabric-26.2-26.2.1.jar" },
-        { "slug": "continuity", "name": "Continuity", "ref": "continuity-3.0.1+26.2.jar" },
         { "slug": "prickle", "name": "Prickle", "ref": "PrickleMC-fabric-MC26.2-26.2.0.3.jar" },
         { "slug": "jade", "name": "Jade 🔍", "ref": "[玉 🔍] Jade-mc26.2-Fabric-26.2.11.jar" },
         { "slug": "xaeros-minimap", "name": "Xaero's Minimap", "ref": "[Xaero的小地图] xaerominimap-fabric-26.2-26.4.2.jar" },
@@ -75,7 +75,8 @@
       "title": "Forge 专属",
       "mods": [
         { "slug": "jei", "name": "Just Enough Items (JEI)" },
-        { "name": "FTB Ultimine", "source": "curseforge", "curseforge": "ftb-ultimine-forge", "note": "Modrinth 无官方版本；该 CurseForge 项目含 NeoForge 版" }
+        { "name": "FTB Ultimine", "source": "curseforge", "curseforge": "ftb-ultimine-forge", "note": "Modrinth 无官方版本；该 CurseForge 项目含 NeoForge 版" },
+        { "slug": "fusion-connected-textures", "name": "Fusion (Connected Textures)", "note": "Continuity 的 Forge/NeoForge 对应" }
       ]
     },
     "neoforge": {
@@ -84,7 +85,8 @@
         { "slug": "jei", "name": "Just Enough Items (JEI)" },
         { "name": "FTB Ultimine", "source": "curseforge", "curseforge": "ftb-ultimine-forge", "note": "Modrinth 无官方版本；该 CurseForge 项目含 NeoForge 版" },
         { "slug": "mouse-tweaks", "name": "Mouse Tweaks", "note": "鼠标手势" },
-        { "name": "Inventory Sorter", "source": "curseforge", "curseforge": "inventory-sorter", "note": "NeoForge 版；Modrinth 无对应版本" }
+        { "name": "Inventory Sorter", "source": "curseforge", "curseforge": "inventory-sorter", "note": "NeoForge 版；Modrinth 无对应版本" },
+        { "slug": "fusion-connected-textures", "name": "Fusion (Connected Textures)", "note": "Continuity 的 Forge/NeoForge 对应" }
       ]
     }
   }

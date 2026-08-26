@@ -54,7 +54,7 @@ uv run pack-porter
 > 分组语义：`Fabric 专属` 仅对 Fabric 实例安装；`通用` 对 Fabric/Forge/NeoForge 均尝试（按目标加载器自动筛版本）；`Forge 专属` / `NeoForge 专属` 只对对应加载器安装。
 > 源头列 = Modrinth slug（默认）或 CurseForge slug（标注 `CurseForge`）。
 
-### Fabric 专属（16）
+### Fabric 专属（17）
 
 | 中文名 | 英文名 | 源头 |
 |---|---|---|
@@ -66,6 +66,7 @@ uv run pack-porter
 | 模组菜单 | Mod Menu | `modmenu` |
 | Fabric 语言 Kotlin | Fabric Language Kotlin | `fabric-language-kotlin` |
 | 物品栏整理 | Inventory Sorting | `inventory-sorting` |
+| 连续性（连接纹理） | Continuity | `continuity` |
 | REI 物品管理器 | Roughly Enough Items (REI) | `rei` |
 | 连锁采集 | VeinMiner | `veinminer` |
 | 连锁采集快捷键 | VeinMiner Hotkey | `veinminer-client` |
@@ -75,7 +76,7 @@ uv run pack-porter
 | 物品滚轮 | Item Scroller | `item-scroller` |
 | 迷你 HUD | MiniHUD | `minihud` |
 
-### 通用（34）
+### 通用（33）
 
 | 中文名 | 英文名 | 源头 |
 |---|---|---|
@@ -90,7 +91,6 @@ uv run pack-porter
 | 键位冲突显示 | Controlling | `controlling` |
 | Reese 的钠视频界面 | Reese's Sodium Options | `reeses-sodium-options` |
 | 经验机制改革 | Clumps | `clumps` |
-| 连续性（连接纹理） | Continuity | `continuity` |
 | Prickle | Prickle | `prickle` |
 | 玉 | Jade | `jade` |
 | Xaero 的小地图 | Xaero's Minimap | `xaeros-minimap` |
@@ -114,14 +114,15 @@ uv run pack-porter
 | 钠 | Sodium | `sodium` |
 | 3D 皮肤层 | 3D Skin Layers | `3dskinlayers` |
 
-### Forge 专属（2）
+### Forge 专属（3）
 
 | 中文名 | 英文名 | 源头 |
 |---|---|---|
 | JEI 物品管理器 | Just Enough Items (JEI) | `jei` |
 | FTB 连锁破坏 | FTB Ultimine | `ftb-ultimine-forge`（CurseForge） |
+| 连接纹理 | Fusion (Connected Textures) | `fusion-connected-textures` |
 
-### NeoForge 专属（4）
+### NeoForge 专属（5）
 
 | 中文名 | 英文名 | 源头 |
 |---|---|---|
@@ -129,6 +130,7 @@ uv run pack-porter
 | FTB 连锁破坏 | FTB Ultimine | `ftb-ultimine-forge`（CurseForge） |
 | 鼠标手势 | Mouse Tweaks | `mouse-tweaks` |
 | 物品栏整理 | Inventory Sorter | `inventory-sorter`（CurseForge） |
+| 连接纹理 | Fusion (Connected Textures) | `fusion-connected-textures` |
 
 ## 说明
 
