@@ -1,4 +1,4 @@
-"""版本号解析、比较与 loader 规则。"""
+"""版本号解析、比较、loader 规则与版本挑选。"""
 
 import re
 
@@ -27,3 +27,12 @@ def loader_for_mc_version(mc_version, neoforge_min_version: str = "1.21") -> str
     if mc is None or boundary is None:
         return "forge"
     return "neoforge" if mc >= boundary else "forge"
+
+
+def pick_best(items, priority, key):
+    """按 ``priority`` 顺序返回第一个 ``key(item)`` 命中 ``priority`` 的 item；无则 ``None``。"""
+    for p in priority:
+        for item in items:
+            if key(item) == p:
+                return item
+    return None

@@ -1,6 +1,6 @@
 # Pack Porter
 
-> Minecraft 基础 Mod 安装器：自动定位 `.minecraft`，按 `mods_manifest.json` 从 **Modrinth**（主）与 **CurseForge**（部分）下载 mod，安装到 `versions/<实例>/mods/`。
+> Minecraft 基础 Mod 安装器：自动定位 `.minecraft`，按 `mods_manifest.json` 从 **Modrinth**（主，含 required 依赖自动解析）下载 mod，**CurseForge** 来源默认仅提醒手动安装（可用参数开启下载），安装到 `versions/<实例>/mods/`。
 
 ## 环境要求
 
@@ -13,7 +13,7 @@
 # 1) 安装依赖（首次）
 uv sync
 
-# 2) 配置 CurseForge API key（可选，仅安装 CurseForge 来源的 mod 时需要）
+# 2) 配置 CurseForge API key（可选，仅用 --download-curseforge 下载 CurseForge mod 时需要）
 #    复制 .env.example 为 .env 并填入 key
 
 # 3) 列出检测到的版本与 loader
@@ -38,6 +38,7 @@ uv run pack-porter
 | `--minecraft-dir PATH` | 手动指定 `.minecraft` 目录 |
 | `--list` | 仅列出检测到的版本/loader，不安装 |
 | `--dry-run` | 解析但不下载 |
+| `--download-curseforge` | 允许下载 CurseForge 来源的 mod（默认仅提醒手动安装） |
 | `--version NAME` | 非交互，指定单个实例（可重复） |
 | `--config PATH` | 指定 config.json |
 | `--manifest PATH` | 指定 mods_manifest.json |
@@ -45,9 +46,11 @@ uv run pack-porter
 
 ## 配置
 
-- `config.json`：日志、加载器规则、超时/重试等（不含密钥）。
+- `config.json`：日志、加载器规则、超时/重试、依赖解析、旧版清理、sha1 校验等（不含密钥）。
 - `.env`：`CURSEFORGE_API_KEY`（敏感，不入库）。
-- `mods_manifest.json`：mod 清单（分组：fabric / common / forge / neoforge）。
+- `mods_manifest.json`：mod 清单（分组：fabric / common / forge_neoforge）。
+
+常用配置项：`download_curseforge`（默认 false）、`resolve_dependencies`（默认 true）、`cleanup_old_versions`（默认 true）、`verify_sha1`（默认 true）。
 
 ## 默认 Mod 列表
 
@@ -130,5 +133,8 @@ uv run pack-porter
 
 - 已排除：旅行者背包（Traveler's Backpack）。
 - 加载器规则：MC `< 1.21` 使用 Forge/Fabric；MC `>= 1.21` 使用 NeoForge/Fabric。
-- 依赖：v1 仅警告不自动下载必需依赖。
+- 依赖：自动解析 Modrinth 的 required 依赖（递归 + 环检测）；CurseForge 依赖仅提示。
+- 旧版清理：按 slug 记录已装文件，升级时删除旧 jar（`<version_dir>/.pack-porter-installed.json`）。
+- 校验：下载后校验 sha1（Modrinth/CurseForge 提供时）。
+- CurseForge：默认仅提醒手动安装；`--download-curseforge` 或 config `download_curseforge: true` 开启下载。
 - 终端表格若中文对不齐，请使用等宽 CJK 字体（如 Sarasa Mono / Cascadia Code）。

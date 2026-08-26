@@ -24,5 +24,10 @@
     "neoforge_min_version": "1.21"
   },
   "version_priority": ["release", "beta", "alpha"],
-  "manifest_file": "mods_manifest.json"
+  "manifest_file": "mods_manifest.json",
+  "download_curseforge": false,
+  "resolve_dependencies": true,
+  "max_dep_depth": 10,
+  "cleanup_old_versions": true,
+  "verify_sha1": true
 }

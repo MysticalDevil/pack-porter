@@ -27,6 +27,11 @@ DEFAULTS = {
     "loader_rules": {"neoforge_min_version": "1.21"},
     "version_priority": ["release", "beta", "alpha"],
     "manifest_file": "mods_manifest.json",
+    "download_curseforge": False,
+    "resolve_dependencies": True,
+    "max_dep_depth": 10,
+    "cleanup_old_versions": True,
+    "verify_sha1": True,
 }
 
 

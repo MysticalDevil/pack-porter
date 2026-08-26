@@ -11,6 +11,7 @@ from rich.console import Console
 from . import config as config_mod
 from . import http, installer, manifest, minecraft
 from .curseforge import CurseForgeClient
+from .deps import DependencyResolver
 from .errors import ResolveError
 from .modrinth import ModrinthClient
 
@@ -25,7 +26,9 @@ _STATUS_LABELS = {
     "no_loader": "无该 loader",
     "no_acceptable_type": "无匹配版本",
     "download_failed": "下载失败",
+    "hash_mismatch": "校验失败",
     "curseforge_no_key": "缺 CurseForge key",
+    "manual_install": "建议手动安装",
     "vanilla": "原版跳过",
 }
 
@@ -69,15 +72,21 @@ def _print_table(title, headers, rows, aligns=None):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Minecraft 基础 Mod 安装器（Modrinth + CurseForge）")
+    p = argparse.ArgumentParser(description="Pack Porter：Minecraft 基础 Mod 安装器（Modrinth + CurseForge）")
     p.add_argument("--minecraft-dir", help="手动指定 .minecraft 目录")
     p.add_argument("--config", help="config.json 路径")
     p.add_argument("--manifest", help="mods_manifest.json 路径")
     p.add_argument("--list", action="store_true", help="仅列出检测到的版本/loader，不安装")
     p.add_argument("--dry-run", action="store_true", help="解析版本但不下载")
+    p.add_argument("--download-curseforge", action="store_true", help="允许下载 CurseForge 来源的 mod（默认仅提醒手动安装）")
     p.add_argument("--version", action="append", default=[], help="指定实例名（可重复，非交互）")
     p.add_argument("--log-level", help="覆盖日志级别（DEBUG/INFO/WARNING/ERROR）")
     return p
+
+
+def _should_download_curseforge(cfg, args) -> bool:
+    """CurseForge 是否下载：config 或命令行任一开启即真（默认关闭）。"""
+    return bool(cfg.get("download_curseforge", False) or args.download_curseforge)
 
 
 def main(argv=None) -> int:
@@ -129,11 +138,12 @@ def main(argv=None) -> int:
     mr = ModrinthClient(client, cfg)
     cf = CurseForgeClient(client, cfg, config_mod.curseforge_api_key())
     inst = installer.Installer(client, cfg)
+    download_cf = _should_download_curseforge(cfg, args)
 
     # 5) 逐个实例安装
     results = []
     for sel in selected:
-        results.extend(_process_instance(sel, manifest_data, mr, cf, inst, args.dry_run))
+        results.extend(_process_instance(sel, manifest_data, mr, cf, inst, cfg, download_cf, args.dry_run))
 
     _print_summary(results)
     return 0
@@ -185,7 +195,7 @@ def _select(detected, version_names):
     return [detected[i] for i in idx if 0 <= i < len(detected)]
 
 
-def _process_instance(sel, manifest_data, mr, cf, inst, dry_run) -> list[dict]:
+def _process_instance(sel, manifest_data, mr, cf, inst, cfg, download_cf, dry_run) -> list[dict]:
     loader = sel["loader"]
     mc_ver = sel["mc_version"]
     if loader == "vanilla":
@@ -198,51 +208,59 @@ def _process_instance(sel, manifest_data, mr, cf, inst, dry_run) -> list[dict]:
     mods = list(manifest.iter_mods(manifest_data, loader))
     console.print(f"\n[bold]== {sel['name']}（{mc_ver} / {loader}）：{len(mods)} 个 mod ==[/bold]")
 
-    manifest_slugs = manifest.all_slugs(manifest_data)
-    dep_cache = {}
-    required_missing = {}
+    resolve_deps = cfg.get("resolve_dependencies", True)
+    resolver = DependencyResolver(mr, manifest.all_slugs(manifest_data), max_depth=cfg.get("max_dep_depth", 10))
+    dep_warnings = []
     results = []
+    headers = {"User-Agent": "pack-porter/0.1"}
 
     for i, mod in enumerate(mods, 1):
         name = mod.get("name") or mod.get("slug") or mod.get("curseforge") or "?"
+        slug = mod.get("slug") or mod.get("curseforge") or name
         try:
-            if mod.get("source") == "curseforge":
-                filename, url, meta = cf.resolve(mod["curseforge"], loader, mc_ver)
-            else:
-                filename, url, meta = mr.resolve(mod["slug"], loader, mc_ver)
-                for pid in mr.required_deps(meta):
-                    slug = _resolve_project_slug(mr, pid, dep_cache)
-                    if slug and slug not in manifest_slugs:
-                        required_missing.setdefault(name, []).append(slug)
+            if mod.get("source") == "curseforge" and not download_cf:
+                url = f"https://www.curseforge.com/minecraft/mc-mods/{mod['curseforge']}"
+                results.append({"name": name, "status": "manual_install", "detail": url, "filename": None})
+                console.print(f"  [yellow]⚠[/yellow] ({i}/{len(mods)}) {name} 建议手动安装：{url}")
+                continue
 
-            status = inst.install(sel["dir"], filename, url, dry_run=dry_run, headers={"User-Agent": "pack-porter/0.1"})
-            results.append({"name": name, "status": status, "detail": "", "filename": filename})
+            if mod.get("source") == "curseforge":
+                resolved = cf.resolve(mod["curseforge"], loader, mc_ver)
+            else:
+                resolved = mr.resolve(mod["slug"], loader, mc_ver)
+
+            status = inst.install(sel["dir"], slug, resolved, dry_run=dry_run, headers=headers)
+            results.append({"name": name, "status": status, "detail": "", "filename": resolved.filename})
             if status == "ok":
-                console.print(f"  [green]✓[/green] ({i}/{len(mods)}) {name} -> {filename}")
+                console.print(f"  [green]✓[/green] ({i}/{len(mods)}) {name} -> {resolved.filename}")
             else:
                 console.print(f"  [yellow]·[/yellow] ({i}/{len(mods)}) {name} 已存在，跳过")
+
+            if resolve_deps and mod.get("source") != "curseforge":
+                for dep_slug, dep_resolved in resolver.collect(resolved.meta, loader, mc_ver):
+                    try:
+                        dstatus = inst.install(sel["dir"], dep_slug, dep_resolved, dry_run=dry_run, headers=headers)
+                        results.append({"name": f"{dep_slug}（依赖）", "status": dstatus, "detail": "", "filename": dep_resolved.filename})
+                        if dstatus == "ok":
+                            console.print(f"    [green]↳[/green] {dep_slug}（依赖）-> {dep_resolved.filename}")
+                        else:
+                            console.print(f"    [yellow]↳[/yellow] {dep_slug}（依赖）已存在，跳过")
+                    except ResolveError as exc:
+                        dep_warnings.append(f"{dep_slug}（{exc.reason}）：{exc.message}")
+                        console.print(f"    [yellow]↳[/yellow] {dep_slug}（依赖）未安装：{exc.message}")
         except ResolveError as exc:
             results.append({"name": name, "status": exc.reason, "detail": exc.message, "filename": None})
             console.print(f"  [red]✗[/red] ({i}/{len(mods)}) {name}: {exc.message}")
-        except Exception as exc:  # noqa: BLE001  网络/未知错误：只记失败，不中断整个流程
+        except Exception as exc:  # noqa: BLE001
             results.append({"name": name, "status": "download_failed", "detail": str(exc), "filename": None})
             console.print(f"  [red]✗[/red] ({i}/{len(mods)}) {name}: {exc}")
 
-    if required_missing:
-        console.print("[yellow]提示：以下 mod 声明了清单外的必需依赖（本工具未自动下载）：[/yellow]")
-        for mod_name, deps in required_missing.items():
-            console.print(f"  - {mod_name}: {', '.join(deps)}")
+    if dep_warnings:
+        console.print("[yellow]提示：以下 required 依赖未能自动安装：[/yellow]")
+        for w in dep_warnings:
+            console.print(f"  - {w}")
 
     return results
-
-
-def _resolve_project_slug(mr, project_id, cache):
-    if project_id in cache:
-        return cache[project_id]
-    proj = mr.get_project(project_id)
-    slug = (proj or {}).get("slug")
-    cache[project_id] = slug
-    return slug
 
 
 def _print_summary(results):
@@ -252,11 +270,17 @@ def _print_summary(results):
     rows = [[_STATUS_LABELS.get(s, s), str(n)] for s, n in sorted(counts.items())]
     _print_table("安装汇总", ["状态", "数量"], rows, aligns=["left", "right"])
 
-    failed = [r for r in results if r["status"] not in ("ok", "skipped_exists")]
+    manual = [r for r in results if r["status"] == "manual_install"]
+    if manual:
+        console.print("\n[bold yellow]建议手动安装（CurseForge）：[/bold yellow]")
+        for r in manual:
+            console.print(f"  - {r['name']}: {r['detail']}")
+
+    failed = [r for r in results if r["status"] not in ("ok", "skipped_exists", "manual_install")]
     if failed:
         console.print("\n[bold yellow]以下 mod 未安装成功：[/bold yellow]")
         for r in failed:
             label = _STATUS_LABELS.get(r["status"], r["status"])
             console.print(f"  - {r['name']}: {label} {r['detail']}".rstrip())
-    else:
+    elif not manual:
         console.print("\n[green]全部安装完成。[/green]")

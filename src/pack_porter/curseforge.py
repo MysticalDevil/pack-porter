@@ -4,11 +4,14 @@ import logging
 
 from . import http
 from .errors import ResolveError
+from .model import ResolvedMod
+from .versioning import pick_best
 
 log = logging.getLogger(__name__)
 
 LOADER_TYPE = {"any": 0, "forge": 1, "fabric": 4, "neoforge": 6}
 RELEASE_TYPE = {"release": 1, "beta": 2, "alpha": 3}
+RELEASE_NAME = {v: k for k, v in RELEASE_TYPE.items()}
 
 
 class CurseForgeClient:
@@ -30,8 +33,8 @@ class CurseForgeClient:
             retries=self.retries, delay=self.delay, timeout=self.timeout,
         )
 
-    def resolve(self, cf_slug: str, loader: str, mc_version: str):
-        """返回 ``(filename, url, file_meta)``，或抛 :class:`ResolveError`。"""
+    def resolve(self, cf_slug: str, loader: str, mc_version: str) -> ResolvedMod:
+        """返回 :class:`ResolvedMod`，或抛 :class:`ResolveError`。"""
         if not self.api_key:
             raise ResolveError("curseforge_no_key", f"{cf_slug} 需要 CurseForge API key（.env）")
 
@@ -46,7 +49,7 @@ class CurseForgeClient:
                 raise ResolveError("no_loader", f"{cf_slug} 无 {loader} 文件")
             raise ResolveError("no_game_version", f"{cf_slug} 无 {mc_version} 版本")
 
-        chosen = self._pick(files)
+        chosen = pick_best(files, self.priority, key=lambda f: RELEASE_NAME.get(f.get("releaseType")))
         if chosen is None:
             raise ResolveError("no_acceptable_type", f"{cf_slug} 无 release/beta/alpha 文件")
 
@@ -54,8 +57,11 @@ class CurseForgeClient:
         if not url:
             raise ResolveError("download_failed", f"{cf_slug} 无下载地址")
 
+        sha1 = next(
+            (h.get("value") for h in chosen.get("hashes", []) if h.get("algo") == 1), None
+        )
         filename = chosen.get("fileName") or f"{cf_slug}.jar"
-        return filename, url, chosen
+        return ResolvedMod(filename=filename, url=url, sha1=sha1, meta=chosen)
 
     def _find_mod_id(self, slug: str):
         if slug in self._mod_id_cache:
@@ -79,10 +85,3 @@ class CurseForgeClient:
             url += "?" + "&".join(params)
         data = self._get(url)
         return data.get("data", [])
-
-    def _pick(self, files):
-        for p in self.priority:
-            for f in files:
-                if f.get("releaseType") == RELEASE_TYPE.get(p):
-                    return f
-        return None

@@ -4,6 +4,8 @@ import logging
 
 from . import http
 from .errors import ResolveError
+from .model import ResolvedMod
+from .versioning import pick_best
 
 log = logging.getLogger(__name__)
 
@@ -32,8 +34,8 @@ class ModrinthClient:
             return None
         # 其它异常（网络/限流）向上抛，由上层归类为 download_failed，不误报「未找到」
 
-    def resolve(self, slug: str, loader: str, mc_version: str):
-        """返回 ``(filename, url, version_meta)``，或抛 :class:`ResolveError`。"""
+    def resolve(self, slug: str, loader: str, mc_version: str) -> ResolvedMod:
+        """解析最新可用版本，返回 :class:`ResolvedMod`，或抛 :class:`ResolveError`。"""
         proj = self.get_project(slug)
         if proj is None:
             raise ResolveError("not_found", f"Modrinth 未找到项目 {slug}")
@@ -52,7 +54,7 @@ class ModrinthClient:
                 raise ResolveError("no_game_version", f"{slug} 无 {mc_version} 版本")
             raise ResolveError("no_acceptable_type", f"{slug} 无匹配 {mc_version}/{loader} 的版本")
 
-        chosen = self._pick(candidates)
+        chosen = pick_best(candidates, self.priority, key=lambda v: v.get("version_type"))
         if chosen is None:
             raise ResolveError("no_acceptable_type", f"{slug} 无 release/beta/alpha 版本")
 
@@ -61,7 +63,8 @@ class ModrinthClient:
             raise ResolveError("download_failed", f"{slug} 无可下载文件")
 
         filename = f.get("filename") or f"{slug}.jar"
-        return filename, f["url"], chosen
+        sha1 = (f.get("hashes") or {}).get("sha1")
+        return ResolvedMod(filename=filename, url=f["url"], sha1=sha1, meta=chosen)
 
     def required_deps(self, version_meta: dict) -> list[str]:
         """返回该版本声明的 required 依赖 project_id 列表。"""
@@ -73,13 +76,6 @@ class ModrinthClient:
 
     def _list_versions(self, slug):
         return self._get(f"{self.base}/project/{slug}/version") or []
-
-    def _pick(self, candidates):
-        for p in self.priority:
-            for v in candidates:
-                if v.get("version_type") == p:
-                    return v
-        return None
 
     @staticmethod
     def _primary_file(version):

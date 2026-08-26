@@ -1,8 +1,11 @@
 """HTTP 封装（基于 httpx）：GET JSON 与流式下载。"""
 
+import hashlib
 import time
 
 import httpx
+
+from .errors import ResolveError
 
 
 class NotFound(Exception):
@@ -48,17 +51,27 @@ def get_json(client, url, headers=None, retries=3, delay=0.0, timeout=None):
     raise RuntimeError(f"GET {url} failed after {retries} tries: {last}")
 
 
-def download(client, url, dest, headers=None, retries=3, timeout=None) -> None:
-    """流式下载到 ``dest``；失败重试。"""
+def download(client, url, dest, headers=None, retries=3, timeout=None, expected_sha1=None) -> None:
+    """流式下载到 ``dest``；可选校验 sha1（不匹配抛 :class:`ResolveError`）。"""
     last = None
     for attempt in range(retries):
         try:
+            h = hashlib.sha1()
             with client.stream("GET", url, headers=headers, timeout=timeout) as resp:
                 resp.raise_for_status()
                 with open(dest, "wb") as f:
                     for chunk in resp.iter_bytes():
                         f.write(chunk)
+                        h.update(chunk)
+            if expected_sha1:
+                actual = h.hexdigest()
+                if actual.lower() != str(expected_sha1).lower():
+                    raise ResolveError(
+                        "hash_mismatch", f"sha1 校验失败：期望 {expected_sha1}，实际 {actual}"
+                    )
             return
+        except ResolveError:
+            raise
         except Exception as exc:  # noqa: BLE001
             last = exc
             if attempt < retries - 1:
