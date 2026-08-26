@@ -8,14 +8,14 @@
     "base_url": "https://api.modrinth.com/v2",
     "user_agent": "mc-mod-installer/0.1 (local use)",
     "timeout_seconds": 30,
-    "retries": 3,
-    "delay_seconds": 0.3
+    "retries": 4,
+    "delay_seconds": 0.5
   },
   "curseforge_api": {
     "base_url": "https://api.curseforge.com/v1",
     "timeout_seconds": 30,
-    "retries": 3,
-    "delay_seconds": 0.6
+    "retries": 4,
+    "delay_seconds": 1.5
   },
   "minecraft": {
     "search_up_levels": 2

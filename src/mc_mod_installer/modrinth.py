@@ -28,9 +28,9 @@ class ModrinthClient:
     def get_project(self, slug_or_id):
         try:
             return self._get(f"{self.base}/project/{slug_or_id}")
-        except Exception as exc:  # noqa: BLE001
-            log.info("Modrinth 项目不存在：%s（%s）", slug_or_id, exc)
+        except http.NotFound:
             return None
+        # 其它异常（网络/限流）向上抛，由上层归类为 download_failed，不误报「未找到」
 
     def resolve(self, slug: str, loader: str, mc_version: str):
         """返回 ``(filename, url, version_meta)``，或抛 :class:`ResolveError`。"""
@@ -72,11 +72,7 @@ class ModrinthClient:
         ]
 
     def _list_versions(self, slug):
-        try:
-            return self._get(f"{self.base}/project/{slug}/version") or []
-        except Exception as exc:  # noqa: BLE001
-            log.warning("获取 %s 版本列表失败：%s", slug, exc)
-            return []
+        return self._get(f"{self.base}/project/{slug}/version") or []
 
     def _pick(self, candidates):
         for p in self.priority:

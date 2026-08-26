@@ -2,11 +2,11 @@
 
 import argparse
 import logging
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
 from rich.console import Console
-from rich.table import Table
 
 from . import config as config_mod
 from . import http, installer, manifest, minecraft
@@ -28,6 +28,44 @@ _STATUS_LABELS = {
     "curseforge_no_key": "缺 CurseForge key",
     "vanilla": "原版跳过",
 }
+
+
+def _display_width(s) -> int:
+    """终端显示宽度：CJK（W/F）计 2，其余计 1。"""
+    return sum(2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1 for ch in str(s))
+
+
+def _pad(s, width: int, align: str = "left") -> str:
+    gap = width - _display_width(s)
+    if gap <= 0:
+        return str(s)
+    return (str(s) + " " * gap) if align == "left" else (" " * gap + str(s))
+
+
+def _print_table(title, headers, rows, aligns=None):
+    """CJK 感知对齐的简单表格。"""
+    aligns = aligns or ["left"] * len(headers)
+    widths = [_display_width(h) for h in headers]
+    for r in rows:
+        for i, c in enumerate(r):
+            widths[i] = max(widths[i], _display_width(c))
+
+    def _cells(cells):
+        return "│ " + " │ ".join(_pad(c, w, a) for c, w, a in zip(cells, widths, aligns)) + " │"
+
+    def _border(left, mid, right):
+        return left + mid.join("─" * (w + 2) for w in widths) + right
+
+    if title:
+        total = sum(widths) + 3 * len(widths) + 1
+        left = max((total - _display_width(title)) // 2, 0)
+        console.print(" " * left + title)
+    console.print(_border("┌", "┬", "┐"))
+    console.print(_cells(headers))
+    console.print(_border("├", "┼", "┤"))
+    for r in rows:
+        console.print(_cells(r))
+    console.print(_border("└", "┴", "┘"))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -117,14 +155,8 @@ def _detect_all(versions, client, cfg) -> list[dict]:
 
 
 def _print_detected(detected):
-    table = Table(title="检测到的版本")
-    table.add_column("#", justify="right")
-    table.add_column("实例")
-    table.add_column("MC 版本")
-    table.add_column("loader")
-    for i, v in enumerate(detected, 1):
-        table.add_row(str(i), v["name"], v["mc_version"] or "?", v["loader"])
-    console.print(table)
+    rows = [[str(i), v["name"], v["mc_version"] or "?", v["loader"]] for i, v in enumerate(detected, 1)]
+    _print_table("检测到的版本", ["#", "实例", "MC 版本", "loader"], rows, aligns=["right", "left", "left", "left"])
 
 
 def _select(detected, version_names):
@@ -192,6 +224,9 @@ def _process_instance(sel, manifest_data, mr, cf, inst, dry_run) -> list[dict]:
         except ResolveError as exc:
             results.append({"name": name, "status": exc.reason, "detail": exc.message, "filename": None})
             console.print(f"  [red]✗[/red] ({i}/{len(mods)}) {name}: {exc.message}")
+        except Exception as exc:  # noqa: BLE001  网络/未知错误：只记失败，不中断整个流程
+            results.append({"name": name, "status": "download_failed", "detail": str(exc), "filename": None})
+            console.print(f"  [red]✗[/red] ({i}/{len(mods)}) {name}: {exc}")
 
     if required_missing:
         console.print("[yellow]提示：以下 mod 声明了清单外的必需依赖（本工具未自动下载）：[/yellow]")
@@ -214,12 +249,8 @@ def _print_summary(results):
     if not results:
         return
     counts = Counter(r["status"] for r in results)
-    table = Table(title="安装汇总")
-    table.add_column("状态", justify="left")
-    table.add_column("数量", justify="right")
-    for status, n in sorted(counts.items()):
-        table.add_row(_STATUS_LABELS.get(status, status), str(n))
-    console.print(table)
+    rows = [[_STATUS_LABELS.get(s, s), str(n)] for s, n in sorted(counts.items())]
+    _print_table("安装汇总", ["状态", "数量"], rows, aligns=["left", "right"])
 
     failed = [r for r in results if r["status"] not in ("ok", "skipped_exists")]
     if failed:
