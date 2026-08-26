@@ -1,0 +1,17 @@
+# 密钥（绝不提交）
+.env
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# 运行日志
+logs/
+
+# IDE
+.idea/
+.vscode/

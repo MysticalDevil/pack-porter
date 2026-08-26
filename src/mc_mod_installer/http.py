@@ -1,0 +1,47 @@
+"""HTTP 封装（基于 httpx）：GET JSON 与流式下载。"""
+
+import time
+
+import httpx
+
+
+def new_client(timeout: float = 30.0) -> httpx.Client:
+    """创建带重定向与合理超时的客户端；下载读超时放宽到至少 60s。"""
+    read_timeout = max(timeout, 60.0)
+    return httpx.Client(
+        follow_redirects=True,
+        timeout=httpx.Timeout(timeout, read=read_timeout),
+    )
+
+
+def get_json(client, url, headers=None, retries: int = 3, delay: float = 0.0, timeout=None):
+    """GET 并解析 JSON；失败按指数退避重试。"""
+    last = None
+    for attempt in range(retries):
+        try:
+            resp = client.get(url, headers=headers, timeout=timeout)
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+            if attempt < retries - 1 and delay > 0:
+                time.sleep(delay * (attempt + 1))
+    raise RuntimeError(f"GET {url} failed after {retries} tries: {last}")
+
+
+def download(client, url, dest, headers=None, retries: int = 3, timeout=None) -> None:
+    """流式下载到 ``dest``；失败重试。"""
+    last = None
+    for attempt in range(retries):
+        try:
+            with client.stream("GET", url, headers=headers, timeout=timeout) as resp:
+                resp.raise_for_status()
+                with open(dest, "wb") as f:
+                    for chunk in resp.iter_bytes():
+                        f.write(chunk)
+            return
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+            if attempt < retries - 1:
+                time.sleep(1.0 * (attempt + 1))
+    raise RuntimeError(f"download {url} failed after {retries} tries: {last}")

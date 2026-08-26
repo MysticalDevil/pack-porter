@@ -1,0 +1,28 @@
+{
+  "logging": {
+    "level": "INFO",
+    "console": true,
+    "log_file": "logs/mc-mod-installer.log"
+  },
+  "modrinth": {
+    "base_url": "https://api.modrinth.com/v2",
+    "user_agent": "mc-mod-installer/0.1 (local use)",
+    "timeout_seconds": 30,
+    "retries": 3,
+    "delay_seconds": 0.3
+  },
+  "curseforge_api": {
+    "base_url": "https://api.curseforge.com/v1",
+    "timeout_seconds": 30,
+    "retries": 3,
+    "delay_seconds": 0.6
+  },
+  "minecraft": {
+    "search_up_levels": 2
+  },
+  "loader_rules": {
+    "neoforge_min_version": "1.21"
+  },
+  "version_priority": ["release", "beta", "alpha"],
+  "manifest_file": "mods_manifest.json"
+}

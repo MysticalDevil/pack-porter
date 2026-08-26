@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "description": "基础 Mod 清单（依据 versions/Latest Vanilla/mods 整理；已排除旅行者背包；rei/veinminer/veinminer-client 与 MaLiLib 套件按约定归入 fabric 组；forge/neoforge 组含 jei、FTB Ultimine，neoforge 另含 Mouse Tweaks 与 Inventory Sorter）",
+  "source": "versions/Latest Vanilla/mods",
+  "field_notes": {
+    "source": "modrinth（默认，可省略）= 从 Modrinth 下载；curseforge = Modrinth 无此 mod，改用 CurseForge 下载",
+    "curseforge": "CurseForge 项目 slug（仅 source=curseforge 的条目），用于 CurseForge 下载",
+    "ref": "来源 mods 目录里的原始 jar 文件名（仅由参考目录生成的条目才有）"
+  },
+  "excluded": [
+    { "slug": "travelersbackpack", "name": "Traveler's Backpack", "reason": "用户要求排除" }
+  ],
+  "groups": {
+    "fabric": {
+      "title": "Fabric 专属（仅对 Fabric 实例安装）",
+      "mods": [
+        { "slug": "fabric-api", "name": "Fabric API", "ref": "fabric-api-0.158.0+26.2.jar" },
+        { "name": "Configured", "source": "curseforge", "curseforge": "configured", "ref": "[配置界面] configured-fabric-26.2-2.7.5.jar", "note": "MrCrayfish 的 Configured（config 菜单库），CurseForge 独占" },
+        { "slug": "carpet", "name": "Carpet", "ref": "[地毯] fabric-carpet-26.2+v260616.jar" },
+        { "slug": "language-reload", "name": "Language Reload", "ref": "language-reload-1.7.7+26.2.jar" },
+        { "slug": "placeholder-api", "name": "Text Placeholder API", "ref": "[文本占位符 API] placeholder-api-3.1.0-beta.1+26.2.jar" },
+        { "slug": "modmenu", "name": "Mod Menu", "ref": "[模组菜单] modmenu-20.0.1.jar" },
+        { "slug": "fabric-language-kotlin", "name": "Fabric Language Kotlin", "ref": "fabric-language-kotlin-1.13.13+kotlin.2.4.10.jar" },
+        { "slug": "inventory-sorting", "name": "Inventory Sorting", "ref": "inventorysorter-fabric-3.0.0+mc26.2.jar", "note": "Kyrptonaught 的 Inventory Sorting" },
+        { "slug": "rei", "name": "Roughly Enough Items (REI)", "ref": "[REI物品管理器] RoughlyEnoughItems-26.2.820.jar", "note": "按约定归 Fabric 专属（Forge/NeoForge 用 JEI）" },
+        { "slug": "veinminer", "name": "VeinMiner", "ref": "veinminer-fabric-2.12.1.jar", "note": "按约定归 Fabric 专属（Forge/NeoForge 用 FTB Ultimine）" },
+        { "slug": "veinminer-client", "name": "VeinMiner Hotkey", "ref": "veinminer-client-fabric-2.12.1.jar", "note": "VeinMiner 的客户端快捷键组件" },
+        { "slug": "malilib", "name": "MaLiLib", "ref": "malilib-fabric-26.2-0.29.4.jar", "note": "masa 套件（按约定归入 Fabric 专属）" },
+        { "slug": "litematica", "name": "Litematica", "ref": "[投影] litematica-fabric-26.2-0.28.5.jar", "note": "masa 套件" },
+        { "slug": "tweakeroo", "name": "Tweakeroo", "ref": "tweakeroo-fabric-26.2-0.29.3.jar", "note": "masa 套件" },
+        { "slug": "item-scroller", "name": "Item Scroller", "ref": "[物品滚轮] itemscroller-fabric-26.2-0.32.1.jar", "note": "masa 套件" },
+        { "slug": "minihud", "name": "MiniHUD", "ref": "[迷你HUD] minihud-fabric-26.2-0.40.5.jar", "note": "masa 套件" }
+      ]
+    },
+    "common": {
+      "title": "多加载器通用（对 Fabric/Forge/NeoForge 均尝试，按目标加载器自动筛版本）",
+      "mods": [
+        { "slug": "iris", "name": "Iris Shaders", "ref": "iris-fabric-1.11.2+mc26.2.jar" },
+        { "slug": "entityculling", "name": "Entity Culling", "ref": "[实体渲染机制优化] entityculling-fabric-1.10.5-mc26.2.jar" },
+        { "slug": "ferrite-core", "name": "FerriteCore", "ref": "[铁氧体磁芯] ferritecore-9.0.0-fabric.jar" },
+        { "slug": "lithium", "name": "Lithium", "ref": "[锂] lithium-fabric-0.25.3+mc26.2.jar" },
+        { "slug": "entitytexturefeatures", "name": "[ETF] Entity Texture Features", "ref": "[实体纹理特性] entity_texture_features-7.1.1-26.2-fabric.jar" },
+        { "slug": "sodium-extra", "name": "Sodium Extra", "ref": "[钠 · 扩展] sodium-extra-fabric-0.9.3+mc26.2.jar" },
+        { "slug": "appleskin", "name": "AppleSkin", "ref": "[苹果皮] appleskin-fabric-mc26.2-3.0.10.jar" },
+        { "slug": "searchables", "name": "Searchables", "ref": "Searchables-fabric-26.2-1.0.1.jar" },
+        { "slug": "controlling", "name": "Controlling", "ref": "[键位冲突显示] Controlling-fabric-26.2-26.2.2.jar" },
+        { "slug": "reeses-sodium-options", "name": "Reese's Sodium Options", "ref": "[Reese的钠视频界面] reeses-sodium-options-fabric-2.2.3+mc26.2.jar" },
+        { "slug": "clumps", "name": "Clumps", "ref": "[经验机制改革] Clumps-fabric-26.2-26.2.1.jar" },
+        { "slug": "continuity", "name": "Continuity", "ref": "continuity-3.0.1+26.2.jar" },
+        { "slug": "prickle", "name": "Prickle", "ref": "PrickleMC-fabric-MC26.2-26.2.0.3.jar" },
+        { "slug": "jade", "name": "Jade 🔍", "ref": "[玉 🔍] Jade-mc26.2-Fabric-26.2.11.jar" },
+        { "slug": "xaeros-minimap", "name": "Xaero's Minimap", "ref": "[Xaero的小地图] xaerominimap-fabric-26.2-26.4.2.jar" },
+        { "slug": "entity-model-features", "name": "[EMF] Entity Model Features", "ref": "[实体模型特性] entity_model_features-3.2.6-26.2-fabric.jar" },
+        { "slug": "carry-on", "name": "Carry On", "ref": "[搬运] carryon-fabric-26.2-2.11.0.jar" },
+        { "slug": "betterf3", "name": "BetterF3", "ref": "[更好的F3] BetterF3-19.0.0-Fabric-26.2.jar" },
+        { "slug": "chat-heads", "name": "Chat Heads", "ref": "[聊天头像] chat_heads-1.2.8-fabric-26.1.jar" },
+        { "slug": "dynamic-fps", "name": "Dynamic FPS", "ref": "[动态 FPS] dynamic-fps-3.11.9+minecraft-26.2.0-fabric.jar" },
+        { "slug": "cloth-config", "name": "Cloth Config API", "ref": "cloth-config-26.2.155.jar" },
+        { "slug": "immediatelyfast", "name": "ImmediatelyFast", "ref": "ImmediatelyFast-Fabric-1.16.3+26.2.jar" },
+        { "slug": "enchantment-descriptions", "name": "Enchantment Descriptions", "ref": "[附魔描述] EnchantmentDescriptions-fabric-MC26.2-26.2.0.2.jar" },
+        { "slug": "xaeros-world-map", "name": "Xaero's World Map", "ref": "[Xaero的世界地图] xaeroworldmap-fabric-26.2-1.45.0.jar" },
+        { "slug": "architectury-api", "name": "Architectury API", "ref": "architectury-fabric-21.0.7.jar" },
+        { "slug": "lambdynamiclights", "name": "LambDynamicLights - Dynamic Lights", "ref": "[Lambd的动态光源] lambdynamiclights-4.12.3+26.2.jar" },
+        { "slug": "not-enough-animations", "name": "Not Enough Animations", "ref": "[更多动画] notenoughanimations-fabric-1.12.4-mc26.2.jar" },
+        { "slug": "cherished-worlds", "name": "Cherished Worlds", "ref": "[存档置顶] cherishedworlds-fabric-17.0.0+26.2.jar" },
+        { "slug": "sodium-shadowy-path-blocks", "name": "Sodium Shadowy Path Blocks (SSPB)", "ref": "[钠 · 土径阴影] sodium-shadowy-path-blocks-fabric-7.0.0.jar" },
+        { "slug": "tcdcommons", "name": "TCDCommons API", "ref": "tcdcommons-5.5.6+fn-26.2.jar" },
+        { "slug": "better-stats", "name": "Better Statistics Screen", "ref": "[更好的统计信息界面] betterstats-5.5.6+fn-26.2.jar" },
+        { "slug": "forge-config-api-port", "name": "Forge Config API Port", "ref": "ForgeConfigAPIPort-v26.2.1-mc26.2.x-Fabric.jar" },
+        { "slug": "sodium", "name": "Sodium", "ref": "[钠] sodium-fabric-0.9.1+mc26.2.jar" },
+        { "slug": "3dskinlayers", "name": "3D Skin Layers", "ref": "[3D 皮肤层] skinlayers3d-fabric-1.11.2-mc26.2.jar" }
+      ]
+    },
+    "forge": {
+      "title": "Forge 专属",
+      "mods": [
+        { "slug": "jei", "name": "Just Enough Items (JEI)" },
+        { "name": "FTB Ultimine", "source": "curseforge", "curseforge": "ftb-ultimine-forge", "note": "Modrinth 无官方版本；该 CurseForge 项目含 NeoForge 版" }
+      ]
+    },
+    "neoforge": {
+      "title": "NeoForge 专属",
+      "mods": [
+        { "slug": "jei", "name": "Just Enough Items (JEI)" },
+        { "name": "FTB Ultimine", "source": "curseforge", "curseforge": "ftb-ultimine-forge", "note": "Modrinth 无官方版本；该 CurseForge 项目含 NeoForge 版" },
+        { "slug": "mouse-tweaks", "name": "Mouse Tweaks", "note": "鼠标手势" },
+        { "name": "Inventory Sorter", "source": "curseforge", "curseforge": "inventory-sorter", "note": "NeoForge 版；Modrinth 无对应版本" }
+      ]
+    }
+  }
+}
