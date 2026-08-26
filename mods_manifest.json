@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "基础 Mod 清单（依据 versions/Latest Vanilla/mods 整理；已排除旅行者背包；rei/veinminer/veinminer-client 与 MaLiLib 套件按约定归入 fabric 组；forge/neoforge 组含 jei、FTB Ultimine，neoforge 另含 Mouse Tweaks 与 Inventory Sorter）",
+  "description": "基础 Mod 清单（依据 versions/Latest Vanilla/mods 整理；已排除旅行者背包；rei/veinminer/veinminer-client、Continuity 与 MaLiLib 套件归 fabric 组；Forge/NeoForge 合并为 forge_neoforge 组，按 MC 版本自动判断）",
   "source": "versions/Latest Vanilla/mods",
   "field_notes": {
     "source": "modrinth（默认，可省略）= 从 Modrinth 下载；curseforge = Modrinth 无此 mod，改用 CurseForge 下载",
@@ -71,22 +71,14 @@
         { "slug": "3dskinlayers", "name": "3D Skin Layers", "ref": "[3D 皮肤层] skinlayers3d-fabric-1.11.2-mc26.2.jar" }
       ]
     },
-    "forge": {
-      "title": "Forge 专属",
+    "forge_neoforge": {
+      "title": "Forge/NeoForge 专属（按 MC 版本自动判断：<1.21 Forge，>=1.21 NeoForge）",
       "mods": [
         { "slug": "jei", "name": "Just Enough Items (JEI)" },
         { "name": "FTB Ultimine", "source": "curseforge", "curseforge": "ftb-ultimine-forge", "note": "Modrinth 无官方版本；该 CurseForge 项目含 NeoForge 版" },
-        { "slug": "fusion-connected-textures", "name": "Fusion (Connected Textures)", "note": "Continuity 的 Forge/NeoForge 对应" }
-      ]
-    },
-    "neoforge": {
-      "title": "NeoForge 专属",
-      "mods": [
-        { "slug": "jei", "name": "Just Enough Items (JEI)" },
-        { "name": "FTB Ultimine", "source": "curseforge", "curseforge": "ftb-ultimine-forge", "note": "Modrinth 无官方版本；该 CurseForge 项目含 NeoForge 版" },
+        { "slug": "fusion-connected-textures", "name": "Fusion (Connected Textures)", "note": "Continuity 的 Forge/NeoForge 对应" },
         { "slug": "mouse-tweaks", "name": "Mouse Tweaks", "note": "鼠标手势" },
-        { "name": "Inventory Sorter", "source": "curseforge", "curseforge": "inventory-sorter", "note": "NeoForge 版；Modrinth 无对应版本" },
-        { "slug": "fusion-connected-textures", "name": "Fusion (Connected Textures)", "note": "Continuity 的 Forge/NeoForge 对应" }
+        { "name": "Inventory Sorter", "source": "curseforge", "curseforge": "inventory-sorter", "note": "NeoForge 版；Modrinth 无对应版本" }
       ]
     }
   }

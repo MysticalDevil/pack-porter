@@ -93,26 +93,39 @@ def detect_mc_version(vj: dict) -> str | None:
 
 
 def detect_loader(vj: dict) -> str:
-    """从 mainClass / libraries 判定 loader（启动器无关）。"""
+    """从 mainClass / libraries 判定 loader（启动器无关）。
+
+    返回 fabric / modded（Forge 或 NeoForge）/ vanilla / unknown；
+    Forge 与 NeoForge 不在此区分，交由 MC 版本规则决定。
+    """
     main_class = (vj.get("mainClass") or "").lower()
     libs = json.dumps(vj.get("libraries", []))
     if "fabricmc" in main_class or "fabric-loader" in libs:
         return "fabric"
-    if "neoforged" in main_class or "neoforged" in libs:
-        return "neoforge"
-    if "modlauncher" in main_class or "launchwrapper" in main_class:
-        return "forge"
-    if "net.minecraftforge" in libs or "cpw.mods" in libs:
-        return "forge"
+    if (
+        "neoforged" in main_class
+        or "neoforged" in libs
+        or "modlauncher" in main_class
+        or "launchwrapper" in main_class
+        or "net.minecraftforge" in libs
+        or "cpw.mods" in libs
+    ):
+        return "modded"
     if main_class == "net.minecraft.client.main.main":
         return "vanilla"
     return "unknown"
 
 
 def resolve_loader(raw_loader: str, mc_version: str | None, neoforge_min_version: str) -> str:
-    """未知 loader 时按 MC 版本规则兜底。"""
-    if raw_loader in ("fabric", "forge", "neoforge", "vanilla"):
-        return raw_loader
+    """把 fabric/modded/vanilla/unknown 解析为最终 loader。
+
+    modded（Forge 或 NeoForge）与 unknown 统一按 MC 版本规则：
+    MC >= neoforge_min_version -> neoforge，否则 -> forge。
+    """
+    if raw_loader == "fabric":
+        return "fabric"
+    if raw_loader == "vanilla":
+        return "vanilla"
     return loader_for_mc_version(mc_version, neoforge_min_version)
 
 

@@ -51,7 +51,7 @@ uv run pack-porter
 
 ## 默认 Mod 列表
 
-> 分组语义：`Fabric 专属` 仅对 Fabric 实例安装；`通用` 对 Fabric/Forge/NeoForge 均尝试（按目标加载器自动筛版本）；`Forge 专属` / `NeoForge 专属` 只对对应加载器安装。
+> 分组语义：`Fabric 专属` 仅对 Fabric 实例安装；`通用` 对 Fabric/Forge/NeoForge 均尝试（按目标加载器自动筛版本）；`Forge/NeoForge 专属` 对 Forge/NeoForge 实例安装，loader 按 MC 版本自动判断（`<1.21` Forge，`>=1.21` NeoForge）。
 > 源头列 = Modrinth slug（默认）或 CurseForge slug（标注 `CurseForge`）。
 
 ### Fabric 专属（17）
@@ -114,23 +114,17 @@ uv run pack-porter
 | 钠 | Sodium | `sodium` |
 | 3D 皮肤层 | 3D Skin Layers | `3dskinlayers` |
 
-### Forge 专属（3）
+### Forge/NeoForge 专属（5）
+
+> loader 按 MC 版本自动判断：`< 1.21` → Forge，`>= 1.21` → NeoForge。
 
 | 中文名 | 英文名 | 源头 |
 |---|---|---|
 | JEI 物品管理器 | Just Enough Items (JEI) | `jei` |
 | FTB 连锁破坏 | FTB Ultimine | `ftb-ultimine-forge`（CurseForge） |
 | 连接纹理 | Fusion (Connected Textures) | `fusion-connected-textures` |
-
-### NeoForge 专属（5）
-
-| 中文名 | 英文名 | 源头 |
-|---|---|---|
-| JEI 物品管理器 | Just Enough Items (JEI) | `jei` |
-| FTB 连锁破坏 | FTB Ultimine | `ftb-ultimine-forge`（CurseForge） |
 | 鼠标手势 | Mouse Tweaks | `mouse-tweaks` |
 | 物品栏整理 | Inventory Sorter | `inventory-sorter`（CurseForge） |
-| 连接纹理 | Fusion (Connected Textures) | `fusion-connected-textures` |
 
 ## 说明
 

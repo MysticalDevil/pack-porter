@@ -12,10 +12,8 @@ def load_manifest(path) -> dict:
 def groups_for_loader(loader: str) -> list[str]:
     if loader == "fabric":
         return ["fabric", "common"]
-    if loader == "forge":
-        return ["forge", "common"]
-    if loader == "neoforge":
-        return ["neoforge", "common"]
+    if loader in ("forge", "neoforge"):
+        return ["forge_neoforge", "common"]
     return ["common"]
 
 
