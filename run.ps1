@@ -1,15 +1,15 @@
-# Minecraft 基础 Mod 安装器 - Windows 启动脚本
+# Pack Porter - Windows 启动脚本
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
 if (Get-Command uv -ErrorAction SilentlyContinue) {
-    uv run mc-mod-installer @args
+    uv run pack-porter @args
     exit $LASTEXITCODE
 }
 
 if (Get-Command python -ErrorAction SilentlyContinue) {
     $env:PYTHONPATH = if ($env:PYTHONPATH) { "$PSScriptRoot\src;$env:PYTHONPATH" } else { "$PSScriptRoot\src" }
-    python -m mc_mod_installer @args
+    python -m pack_porter @args
     exit $LASTEXITCODE
 }
 

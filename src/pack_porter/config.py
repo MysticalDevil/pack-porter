@@ -9,19 +9,19 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 DEFAULTS = {
-    "logging": {"level": "INFO", "console": True, "log_file": "logs/mc-mod-installer.log"},
+    "logging": {"level": "INFO", "console": True, "log_file": "logs/pack-porter.log"},
     "modrinth": {
         "base_url": "https://api.modrinth.com/v2",
-        "user_agent": "mc-mod-installer/0.1 (local use)",
+        "user_agent": "pack-porter/0.1 (local use)",
         "timeout_seconds": 30,
-        "retries": 3,
-        "delay_seconds": 0.3,
+        "retries": 4,
+        "delay_seconds": 0.5,
     },
     "curseforge_api": {
         "base_url": "https://api.curseforge.com/v1",
         "timeout_seconds": 30,
-        "retries": 3,
-        "delay_seconds": 0.6,
+        "retries": 4,
+        "delay_seconds": 1.5,
     },
     "minecraft": {"search_up_levels": 2},
     "loader_rules": {"neoforge_min_version": "1.21"},

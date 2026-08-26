@@ -9,7 +9,7 @@ from . import http
 from .versioning import looks_like_version, loader_for_mc_version
 
 MOJANG_MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
-_CACHE_DIR = Path.home() / ".cache" / "mc-mod-installer"
+_CACHE_DIR = Path.home() / ".cache" / "pack-porter"
 _SHA1_LOOKUP_CAP = 40
 
 
@@ -154,7 +154,7 @@ def resolve_mc_version_by_sha1(client, client_sha1: str) -> str | None:
         if not url:
             continue
         try:
-            vj = http.get_json(client, url, headers={"User-Agent": "mc-mod-installer/0.1"}, retries=1)
+            vj = http.get_json(client, url, headers={"User-Agent": "pack-porter/0.1"}, retries=1)
             fetched += 1
         except Exception:  # noqa: BLE001
             continue
@@ -179,7 +179,7 @@ def _load_manifest(client) -> dict:
             return json.loads(path.read_text(encoding="utf-8"))
         except Exception:  # noqa: BLE001
             pass
-    data = http.get_json(client, MOJANG_MANIFEST_URL, headers={"User-Agent": "mc-mod-installer/0.1"})
+    data = http.get_json(client, MOJANG_MANIFEST_URL, headers={"User-Agent": "pack-porter/0.1"})
     try:
         path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     except Exception:  # noqa: BLE001

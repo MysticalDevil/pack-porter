@@ -23,7 +23,7 @@ _STATUS_LABELS = {
     "not_found": "未找到",
     "no_game_version": "无该 MC 版本",
     "no_loader": "无该 loader",
-    "no_acceptable_type": "无 release/beta/alpha",
+    "no_acceptable_type": "无匹配版本",
     "download_failed": "下载失败",
     "curseforge_no_key": "缺 CurseForge key",
     "vanilla": "原版跳过",
@@ -215,7 +215,7 @@ def _process_instance(sel, manifest_data, mr, cf, inst, dry_run) -> list[dict]:
                     if slug and slug not in manifest_slugs:
                         required_missing.setdefault(name, []).append(slug)
 
-            status = inst.install(sel["dir"], filename, url, dry_run=dry_run, headers={"User-Agent": "mc-mod-installer/0.1"})
+            status = inst.install(sel["dir"], filename, url, dry_run=dry_run, headers={"User-Agent": "pack-porter/0.1"})
             results.append({"name": name, "status": status, "detail": "", "filename": filename})
             if status == "ok":
                 console.print(f"  [green]✓[/green] ({i}/{len(mods)}) {name} -> {filename}")

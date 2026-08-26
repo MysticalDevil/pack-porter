@@ -2,11 +2,11 @@
   "logging": {
     "level": "INFO",
     "console": true,
-    "log_file": "logs/mc-mod-installer.log"
+    "log_file": "logs/pack-porter.log"
   },
   "modrinth": {
     "base_url": "https://api.modrinth.com/v2",
-    "user_agent": "mc-mod-installer/0.1 (local use)",
+    "user_agent": "pack-porter/0.1 (local use)",
     "timeout_seconds": 30,
     "retries": 4,
     "delay_seconds": 0.5
